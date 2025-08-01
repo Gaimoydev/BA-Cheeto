@@ -1,0 +1,35 @@
+name: Build BA-Cheeto
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup MSBuild environment
+        uses: microsoft/{repo}@v1
+
+      - name: Build BA ‑ Cheeto Release x64
+        shell: powershell
+        run: |
+          msbuild /p:Configuration=Release /p:Platform=x64 BA-Cheeto.vcxproj
+
+      - name: Show output folder contents
+        shell: powershell
+        run: |
+          Get-ChildItem -Recurse -File bin\Release‑x64
+
+      - name: Upload built DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: BA‑Cheeto-Release-x64
+          path: bin\Release‑x64\*.dll
